@@ -31,6 +31,9 @@ make out the connections.
 ![Foto of the finished circuit by me][1]
 
 ![Schematics made in Fritzing by me 1][2]
-![Schematics made in Fritzing by me 2][3]
+
+
+[1]: https://raw.githubusercontent.com/MalteT/counter-avr/main/static/foto_of_the_result.JPG
+[2]: https://raw.githubusercontent.com/MalteT/counter-avr/main/static/Counter_bb.svg
 
 License: MIT
