@@ -31,11 +31,19 @@
 //! make out the connections.
 //! ![Foto of the finished circuit by me][1]
 //!
+//! Note that the seven segment LED part in Fritzing seems broken. The pins on the breadboard do
+//! not match up with those shown in [this schematic][3].
+//!
+//! If you're having trouble mapping your segments correctly, have a look at the [`Segments`
+//! struct][4]. It's a mapping from each pin of the port to the name of the segment.
+//!
 //! ![Schematics made in Fritzing by me 1][2]
 //!
 //!
 //! [1]: https://raw.githubusercontent.com/MalteT/counter-avr/main/static/foto_of_the_result.JPG
 //! [2]: https://raw.githubusercontent.com/MalteT/counter-avr/main/static/Counter_bb.svg
+//! [3]: https://github.com/MalteT/counter-avr/blob/main/static/Counter_schema.svg
+//! [4]: https://github.com/MalteT/counter-avr/blob/0ad680ff392639b7e11c5dfc12527a8bcf817132/src/main.rs#L63
 
 use core::ptr::{read_volatile, write_volatile};
 use bitflags::bitflags;
