@@ -10,20 +10,20 @@
 //! # Hardware
 //!
 //! The setup for this project consists of
-//!  - an ATmega328P (or ATmega328, I guess)
+//!  - an **ATmega328P** (or ATmega328, I guess)
 //!
 //!    I'm using an Arduino, but this should work without one. Just lookup the PIN mapping from the
 //!    mcu to the Arduino pins and change the circuit accordingly.
-//!  - a seven segment LED (or seven leds, if that's what you have on hand)
-//!  - a pushbutton
-//!  - one capacitor, I think mine is 1nF
-//!  - some (9) resistors, 220Ω should do
+//!  - a **seven segment LED** (or seven leds, if that's what you have on hand)
+//!  - a **pushbutton**
+//!  - one **capacitor**, I think mine is 1nF
+//!  - some (8) **resistors**, 220Ω should do
 //!
 //!    I also used a 1kΩ resistor combined with the capacitor to create a simple debouncer. I think
 //!    it was mainly luck that mine worked out of the box. There are a number of different
 //!    techniques for creating the same effect.
-//!  - some wires/jumpers and
-//!  - a breadboard
+//!  - some **wires/jumpers** and
+//!  - a **breadboard**
 //!
 //! # Wiring
 //!
@@ -55,6 +55,11 @@
 //! ```console
 //! $ make PORT=/dev/yourport
 //! ```
+//!
+//! # Contribution
+//!
+//! If your having trouble with the way I explained something or found a bug, feel free to contact
+//! me or open an issue!
 //!
 //! [1]: https://raw.githubusercontent.com/MalteT/counter-avr/main/static/foto_of_the_result.JPG
 //! [2]: https://raw.githubusercontent.com/MalteT/counter-avr/main/static/Counter_bb.svg
