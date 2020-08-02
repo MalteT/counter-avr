@@ -1,18 +1,48 @@
 #![feature(llvm_asm, lang_items, abi_avr_interrupt)]
 #![no_std]
 #![no_main]
-
-extern crate ruduino;
-extern crate bitflags;
+//! This is a small program I wrote while learning some of the basics of programming an
+//! AVR-based chip using Rust.
+//!
+//! If you're interested in learning the basics, check out the
+//! [AWESOME list](https://github.com/avr-rust/awesome-avr-rust) about where to start.
+//!
+//! # Hardware
+//!
+//! The setup for this project consists of
+//!  - an ATmega328P (or ATmega328, I guess)
+//!
+//!    I'm using an Arduino, but this should work without one. Just lookup the PIN mapping from the
+//!    mcu to the Arduino pins and change the circuit accordingly.
+//!  - a seven segment LED (or seven leds, if that's what you have on hand)
+//!  - a pushbutton
+//!  - one capacitor, I think mine is 1nF
+//!  - some (9) resistors, 220Ω should do
+//!
+//!    I also used a 1kΩ resistor combined with the capacitor to create a simple debouncer. I think
+//!    it was mainly luck that mine worked out of the box. There are a number of different
+//!    techniques for creating the same effect.
+//!  - some wires/jumpers and
+//!  - a breadboard
+//!
+//! # Wiring
+//!
+//! Here is an image showing the wiring. But feel free to use the schematic below, if you can't
+//! make out the connections.
+//! ![Foto of the finished circuit by me][1]
+//!
+//! ![Schematics made in Fritzing by me 1][2]
+//! ![Schematics made in Fritzing by me 2][3]
 
 use core::ptr::{read_volatile, write_volatile};
 use bitflags::bitflags;
-use ruduino::cores::atmega328 as avr_core;
+use ruduino::cores::current as avr_core;
 use ruduino::{Pin, RegisterBits, Register};
 
 use avr_core::{DDRD, PORTD, port, PCMSK0, PCICR, DDRB, SREG, PORTB};
 
 static mut NUMBER: u8 = 0;
+static mut TOGGLE_SWITCH: bool = false;
 
 #[no_mangle]
 pub extern fn main() {
@@ -23,13 +53,6 @@ pub extern fn main() {
     SREG::set(SREG::I);
 
     loop {
-    }
-}
-
-/// A small busy loop.
-fn small_delay() {
-    for _ in 0..1000000 {
-        unsafe { llvm_asm!("" :::: "volatile")}
     }
 }
 
@@ -58,6 +81,10 @@ bitflags! {
 
 #[no_mangle]
 pub unsafe extern "avr-interrupt" fn __vector_3() {
+    TOGGLE_SWITCH = !TOGGLE_SWITCH;
+    if TOGGLE_SWITCH {
+        return
+    }
     let prev_value = read_volatile(PORTB::ADDRESS);
     write_volatile(PORTB::ADDRESS, prev_value ^ port::B5::MASK);
     NUMBER = (NUMBER + 1) % 10;
