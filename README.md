@@ -1,7 +1,8 @@
 # counter
 
 This is a small program I wrote while learning some of the basics of programming an
-AVR-based chip using Rust.
+AVR-based chip using Rust. Every push on the button increments the displayed digit by one.
+This is interrupt-based and I tried to debounce the button, which I think, worked quite well.
 
 If you're interested in learning the basics, check out the
 [AWESOME list](https://github.com/avr-rust/awesome-avr-rust) about where to start.
