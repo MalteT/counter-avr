@@ -1,0 +1,14 @@
+[package]
+name = "counter"
+version = "0.1.0"
+authors = ["Malte Tammena <malte.tammena@gmx.de>"]
+license = "MIT"
+edition = '2018'
+description = "Simple example on how to use Rust for the ATmega328P to power a seven segment LED display."
+repository = "https://github.com/MalteT/counter-avr.git"
+
+[dependencies]
+ruduino = "0.2"
+bitflags = "1.2.1"
+
+
