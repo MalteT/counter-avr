@@ -107,6 +107,9 @@ pub extern "C" fn main() -> ! {
     // We don't want our program to end.. ever. Only the spiritual figure of your choice might
     // know what happens when our main function exits. An assortment of guesses (and scientific
     // explanations) can be found [here](https://electronics.stackexchange.com/questions/30830/what-happens-when-an-embedded-program-finishes).
+    unsafe {
+        Segments::from_u8(NUMBER).display();
+    }
     loop {}
 }
 
