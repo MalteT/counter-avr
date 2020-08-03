@@ -55,6 +55,12 @@ If your serial port differs from `/dev/ttyACM0` overwrite it like this:
 $ make PORT=/dev/yourport
 ```
 
+## The progam
+
+I tried to do some heavy commenting, to enable everyone to learn from this example. Now,
+there are some really ugly parts and some of the unsafe code could, and might, be rewritten
+in a safer way, but if you want to have a look, follow the white rabbit [🐇][6]
+
 ## Contribution
 
 If your having trouble with the way I explained something or found a bug, feel free to contact
@@ -65,5 +71,6 @@ me or open an issue!
 [3]: https://github.com/MalteT/counter-avr/blob/main/static/Counter_schema.svg
 [4]: https://github.com/MalteT/counter-avr/blob/0ad680ff392639b7e11c5dfc12527a8bcf817132/src/main.rs#L63
 [5]: https://www.nongnu.org/avrdude/
+[6]: https://github.com/MalteT/counter-avr/blob/main/src/main.rs
 
 License: MIT
