@@ -150,6 +150,43 @@ bitflags! {
 ///    mutation. I might redo this part.
 ///  - Reading/Writing in a volatile way. These function calls will not be reordered by the
 ///    compiler, which is rather important when changing I/O.
+///
+/// # Naming
+///
+/// I hear you scream: "What a terrible name!", but listen.
+/// It's possible to reference this function correctly while having a nice name for
+/// it, but naming it like this, the compiler actually did everything for me! Look:
+/// ```text
+/// 00000000 <__vectors>:
+///    0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
+///    4:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///    8:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///    c:	0c 94 64 00 	jmp	0xc8	; 0xc8 <__vector_3>
+///   10:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   14:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   18:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   1c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   20:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   24:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   28:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   2c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   30:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   34:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   38:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   3c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   40:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   44:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   48:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   4c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   50:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   54:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   58:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   5c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   60:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+///   64:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+/// ```
+/// This is one of the first things `avr-objdump -d ELF_FILE` prints. Right there, at address `0xc`,
+/// there is a jump to our function, which seems to be sitting at address `0xc8`
 #[no_mangle]
 pub unsafe extern "avr-interrupt" fn __vector_3() {
     // Skip every second interrupt routine. This is a slightly nasty hack to prevent
