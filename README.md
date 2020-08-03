@@ -1,9 +1,13 @@
 # counter
 
 This is a small program I wrote while learning some of the basics of programming an
-AVR-based chip using Rust.
+AVR-based chip using Rust. The seven segment LED shows a number betreen 0 and 9. Upon
+pressing the button an interrupt is fired that increments the shown number. The counter is
+wrapping at 9, so that it continues at 0. I made an effort to make it overcomplicated by
+storing the displayed digit in the non-volatile, internal EEPROM of the ATmega328P. Resetting
+the mcu thus does not reset the counter itself!
 
-If you're interested in learning the basics, check out the
+If you're interested in learning the basics of AVR and Rust, check out the
 [AWESOME list](https://github.com/avr-rust/awesome-avr-rust) about where to start.
 
 ## Hardware

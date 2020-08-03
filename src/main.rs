@@ -2,9 +2,13 @@
 #![no_std]
 #![no_main]
 //! This is a small program I wrote while learning some of the basics of programming an
-//! AVR-based chip using Rust.
+//! AVR-based chip using Rust. The seven segment LED shows a number betreen 0 and 9. Upon
+//! pressing the button an interrupt is fired that increments the shown number. The counter is
+//! wrapping at 9, so that it continues at 0. I made an effort to make it overcomplicated by
+//! storing the displayed digit in the non-volatile, internal EEPROM of the ATmega328P. Resetting
+//! the mcu thus does not reset the counter itself!
 //!
-//! If you're interested in learning the basics, check out the
+//! If you're interested in learning the basics of AVR and Rust, check out the
 //! [AWESOME list](https://github.com/avr-rust/awesome-avr-rust) about where to start.
 //!
 //! # Hardware
@@ -74,13 +78,15 @@
 //! [5]: https://www.nongnu.org/avrdude/
 //! [6]: https://github.com/MalteT/counter-avr/blob/main/src/main.rs
 use bitflags::bitflags;
+use ruduino::{
+    cores::current as avr_core, interrupt::without_interrupts, Pin, Register, RegisterBits,
+};
+
+use avr_core::{port, DDRB, DDRD, EEAR, EECR, EEDR, PCICR, PCMSK0, PORTB, PORTD, SPMCSR, SREG};
+
 use core::ptr::{read_volatile, write_volatile};
-use ruduino::cores::current as avr_core;
-use ruduino::{Pin, Register, RegisterBits};
 
-use avr_core::{port, DDRB, DDRD, PCICR, PCMSK0, PORTB, PORTD, SREG};
-
-static mut NUMBER: u8 = 0;
+static mut NUMBER: EepromAddress = EepromAddress(0);
 static mut TOGGLE_SWITCH: bool = false;
 
 #[no_mangle]
@@ -108,7 +114,7 @@ pub extern "C" fn main() -> ! {
     // know what happens when our main function exits. An assortment of guesses (and scientific
     // explanations) can be found [here](https://electronics.stackexchange.com/questions/30830/what-happens-when-an-embedded-program-finishes).
     unsafe {
-        Segments::from_u8(NUMBER).display();
+        Segments::from_u8(NUMBER.read()).display();
     }
     loop {}
 }
@@ -205,9 +211,10 @@ pub unsafe extern "avr-interrupt" fn __vector_3() {
     write_volatile(PORTB::ADDRESS, prev_value ^ port::B5::MASK);
     // Now increment the current displayed number. This will result in a counter, that
     // counts from 0 to 9 and then resets.
-    NUMBER = (NUMBER + 1) % 10;
+    let new_number = (NUMBER.read() + 1) % 10;
+    NUMBER.write(new_number);
     // Most importantly actually display the number!
-    Segments::from_u8(NUMBER).display()
+    Segments::from_u8(new_number).display()
 }
 
 impl Segments {
@@ -238,5 +245,39 @@ impl Segments {
             9 => Self::NINE,
             _ => Self::ZERO,
         }
+    }
+}
+
+pub struct EepromAddress(u8);
+
+impl EepromAddress {
+    pub fn read(&self) -> u8 {
+        without_interrupts(|| {
+            // Do not acces eeprom, if it is written to or the flash is currently programmed!
+            while EECR::is_set(EECR::EEPE) || SPMCSR::is_set(SPMCSR::SPMEN) {}
+            // Write the address
+            EEAR::write(self.0);
+            // Start reading from eeprom
+            // XXX: This could be `set` but `set` isn't using volatile_* atm.
+            EECR::write(EECR::EERE);
+            // Return the read value
+            let ret = EEDR::read();
+            ret
+        })
+    }
+    pub fn write(&mut self, val: u8) {
+        without_interrupts(|| {
+            // Do not acces eeprom, if it is written to or the flash is currently programmed!
+            while EECR::is_set(EECR::EEPE) || SPMCSR::is_set(SPMCSR::SPMEN) {}
+            // Write the address
+            EEAR::write(self.0);
+            // Write the value
+            EEDR::write(val);
+            // Start writing to the eeprom
+            // XXX: This could be `set` but `set` isn't using volatile_* atm.
+            EECR::write(EECR::EEMPE);
+            // XXX: This could be `set` but `set` isn't using volatile_* atm.
+            EECR::write(EECR::EEPE);
+        })
     }
 }
